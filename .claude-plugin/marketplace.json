@@ -1,0 +1,26 @@
+{
+  "name": "kitbash",
+  "owner": { "name": "Ludovico Cellentani" },
+  "plugins": [
+    {
+      "name": "core",
+      "source": "./plugins/core",
+      "description": "Cross-cutting conventions and primitives shared by other kitbash plugins"
+    },
+    {
+      "name": "quartermaster-ledger",
+      "source": "./plugins/quartermaster-ledger",
+      "description": "Tracks and reports how much AI involvement went into work — commit-level delegation tagging today, token/cost consumption reporting planned"
+    },
+    {
+      "name": "spec-plan-workflow",
+      "source": "./plugins/spec-plan-workflow",
+      "description": "Spec-to-plan authoring and review pipeline: draft SPECs, draft Implementation Plans against them, audit both, and update plan status as work progresses"
+    },
+    {
+      "name": "cpp-engine-conventions",
+      "source": "./plugins/cpp-engine-conventions",
+      "description": "Modern C++ (C++17/20/23) coding standards, this project's concrete style conventions, and clang-format automation for game-engine-style codebases"
+    }
+  ]
+}
