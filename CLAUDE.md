@@ -4,10 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-This repo is pre-scaffolding: it currently contains only `README.md`, `LICENSE` (Apache 2.0), and
-`docs/context/kitbash-handoff.md` (the planning doc this file is derived from). None of the structure
-described below exists on disk yet — it is the target architecture, not a description of current files.
-Check `git log` / repo contents before assuming a plugin or file already exists.
+The repo is scaffolded and live: `.claude-plugin/marketplace.json` registers four plugins, each with a
+real `plugin.json` and at least one skill. The marketplace is published on GitHub
+(`lcellentani/kitbash`) and has been installed and exercised end-to-end (not just schema-validated) from
+inside this repo. See "Plugins" below for what actually exists today, and
+`docs/context/session-2026-08-16-handoff.md` for full session history, verified platform facts, and open
+questions. Still pre-`v0.1.0`: no plugin has been tagged yet, and the marketplace/plugins haven't been
+validated from an *external* consuming project (see that doc's open question #3). Check `git log` / repo
+contents before assuming anything beyond this has changed.
 
 ## What this repo is
 
@@ -24,41 +28,54 @@ Key architectural decisions:
 - Public GitHub repo with no compatibility guarantees or issue/PR triage expectations (personal workflow
   tool, not a product).
 
-## Target repo structure
+## Plugins (current, on disk)
 
 ```
 kitbash/
 ├── .claude-plugin/
 │   └── marketplace.json        # root registry listing all plugins
 ├── plugins/
-│   ├── cpp-engine-conventions/
-│   │   ├── .claude-plugin/plugin.json
-│   │   └── skills/
-│   ├── quartermaster-ledger/   # Claude Code token consumption reporting
-│   │   ├── .claude-plugin/plugin.json
-│   │   └── skills/
-│   ├── quartermaster-crew/     # subagent routing
-│   │   ├── .claude-plugin/plugin.json
-│   │   └── agents/
-│   └── code-review-craftsmanship/
-│       ├── .claude-plugin/plugin.json
-│       └── skills/
+│   ├── core/                          # cross-cutting primitives shared by other kitbash plugins
+│   │   ├── .claude-plugin/plugin.json   #   no dependencies
+│   │   └── skills/delegation-tiers/     #   T1-T4 AI-involvement taxonomy; user-invocable: false
+│   ├── quartermaster-ledger/          # tracks/reports AI involvement — commit-level tagging today
+│   │   ├── .claude-plugin/plugin.json   #   dependencies: ["core"]
+│   │   └── skills/git-commit/
+│   ├── spec-plan-workflow/            # spec -> plan authoring/review pipeline
+│   │   ├── .claude-plugin/plugin.json   #   dependencies: ["core"]
+│   │   └── skills/                      #   spec-new, spec-review, plan-draft, plan-review, plan-update
+│   └── cpp-engine-conventions/        # C++17/20/23 conventions + clang-format automation
+│       ├── .claude-plugin/plugin.json   #   no dependencies
+│       └── skills/                      #   clang-format, cpp-coding-standards
+├── docs/context/                      # planning + session-handoff docs, not part of the plugin content
 ├── README.md
 └── LICENSE
 ```
 
 Each plugin is self-contained under `plugins/<name>/` with its own `.claude-plugin/plugin.json`
-(`name`, `description`, `version`), and is registered in the root `.claude-plugin/marketplace.json`
-via `{ "name": "<name>", "source": "./plugins/<name>" }`.
+(`name`, `description`, `version`, optional `dependencies`), and is registered in the root
+`.claude-plugin/marketplace.json` via `{ "name": "<name>", "source": "./plugins/<name>" }`.
+Cross-plugin sharing goes through the `dependencies` field (not symlinks — see session handoff doc for
+why), and Claude Code auto-installs a listed dependency alongside the plugin that declares it.
+
+`quartermaster-crew` (subagent routing) and `code-review-craftsmanship`, named in the original planning
+doc (`docs/context/kitbash-handoff.md`), do **not** exist yet — whether they're still planned or
+superseded by `spec-plan-workflow`/`core` is an open question, not a build-order gap. Don't assume they
+exist without checking `plugins/` first.
 
 ## Commands
 
 - Validate a plugin before committing it: `claude plugin validate ./plugins/<plugin-name>`
-- Add the marketplace once per machine: `/plugin marketplace add ludocellentani/kitbash`
+- Add the marketplace once per machine: `/plugin marketplace add lcellentani/kitbash` (or the CLI form,
+  `claude plugin marketplace add lcellentani/kitbash`)
 - Install a plugin into a project: `/plugin install <plugin-name>@kitbash`
 
 There is no build, lint, or test suite yet — plugin correctness is verified via `claude plugin validate`
 and by installing + exercising the plugin in a real project.
+
+Installed plugins are **cached**, not read live from this repo — editing a skill here does not affect an
+already-installed copy. To pick up local edits: bump `version` in that plugin's `plugin.json`, then
+`/plugin marketplace update kitbash` followed by `/plugin update <plugin-name>@kitbash`.
 
 ## Versioning
 
@@ -66,13 +83,21 @@ Tag releases (`v0.1.0`, semver) once a plugin stabilizes, so a mid-refactor comm
 silently change behavior for a project currently depending on it. Day-to-day iteration happens directly
 on `main`; tags are the stability boundary, not branches.
 
-## Build order (from the handoff plan)
+## How plugins got here, and what's left before v0.1.0
 
-1. Scaffold `.claude-plugin/marketplace.json`.
-2. Migrate `quartermaster-ledger` (consumption reporting) first; validate.
-3. Migrate `quartermaster-crew` (subagent routing) second; validate.
-4. Once both quartermaster plugins work end-to-end in a real project, tag `v0.1.0` and migrate
-   `cpp-engine-conventions` and `code-review-craftsmanship`.
+The original plan (`docs/context/kitbash-handoff.md`) called for `quartermaster-ledger` and
+`quartermaster-crew` first, then a `v0.1.0` tag, then `cpp-engine-conventions` and
+`code-review-craftsmanship`. What actually happened deviated from that (see the session handoff doc's
+"Deviations" section for why): `core` and `spec-plan-workflow` were added, `quartermaster-crew` and
+`code-review-craftsmanship` were never built, and `cpp-engine-conventions` was migrated without waiting
+for a `v0.1.0` tag.
 
-When adding a new plugin, follow this same pattern: scaffold it, validate it in isolation, then prove it
-end-to-end in a real consuming project before treating it as stable.
+Still open before tagging `v0.1.0`:
+- `quartermaster-ledger` + `core` have been installed and exercised live, but only from *inside* this
+  repo — not yet from a separate external consuming project.
+- `spec-plan-workflow` and `cpp-engine-conventions` haven't had that same live install-and-exercise pass
+  at all yet.
+
+When adding a new plugin, follow the pattern that worked for `quartermaster-ledger`: scaffold it,
+`claude plugin validate` it in isolation, then prove it end-to-end (install + actually invoke a skill)
+in a real consuming project before treating it as stable.
