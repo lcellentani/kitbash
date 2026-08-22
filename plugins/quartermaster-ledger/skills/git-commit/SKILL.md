@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Generate a git commit message tagged with its delegation tier ([Tn] type(scope): subject). Use when asked to commit staged changes, write a commit message, or run /git-commit.
+description: "Generate a git commit message tagged with its delegation tier ([Tn] type(scope): subject). Use when asked to commit staged changes, write a commit message, or run /git-commit."
 model: haiku
 ---
 
