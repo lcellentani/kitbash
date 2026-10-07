@@ -1,17 +1,24 @@
 ---
 name: git-commit
-description: "Generate a git commit message tagged with its delegation tier ([Tn] type(scope): subject). Use when asked to commit staged changes, write a commit message, or run /git-commit."
-model: haiku
+description: "Draft a git commit message for the staged changes, tagged with its delegation tier ([Tn] type(scope): subject). Use when asked to write or draft a commit message, before committing staged changes, or on /git-commit. Produces the message only — it doesn't run git commit."
+argument-hint: "[T1|T2|T3|T4]"
+allowed-tools: Bash(git diff *)
 ---
 
 # git-commit
 
-Run `git diff --cached` to inspect the staged changes.
+## Staged changes
+
+!`git diff --cached --stat`
+
+!`git diff --cached`
+
+If the staged changes above are empty, say nothing is staged and stop.
 
 ## Delegation tier
 
 The delegation tier is: $ARGUMENTS
-Valid values: T1, T2, T3, T4 — see the `delegation-tiers` skill (core plugin) for what each tier means.
+Valid values: T1, T2, T3, T4 — see the `core:delegation-tiers` skill for what each tier means.
 If $ARGUMENTS is empty or not a valid tier, stop and ask: "Which delegation tier? (T1/T2/T3/T4)"
 
 ## Format

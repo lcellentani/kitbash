@@ -1,7 +1,7 @@
 {
   "name": "quartermaster-ledger",
   "description": "Tracks and reports how much AI involvement went into work — commit-level delegation tagging today, token/cost consumption reporting planned",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": { "name": "Ludovico Cellentani" },
   "dependencies": ["core"]
 }
