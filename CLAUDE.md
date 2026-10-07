@@ -46,7 +46,9 @@ kitbash/
 │   │   └── skills/                      #   spec-new, spec-review, plan-draft, plan-review, plan-update
 │   └── cpp-engine-conventions/        # C++17/20/23 conventions + clang-format automation
 │       ├── .claude-plugin/plugin.json   #   no dependencies
-│       └── skills/                      #   clang-format, cpp-coding-standards
+│       ├── hooks/hooks.json             #   PostToolUse records edited C++ files, Stop formats them
+│       ├── scripts/                     #   clang-format-hook.sh (kept LF via .gitattributes)
+│       └── skills/                      #   clang-format (+ reference .clang-format), cpp-coding-standards
 ├── docs/context/                      # planning + session-handoff docs, not part of the plugin content
 ├── README.md
 └── LICENSE
