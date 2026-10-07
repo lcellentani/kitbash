@@ -1,7 +1,11 @@
 ---
 name: clang-format
-description: Apply the project's .clang-format style via `clang-format -i`. Use when asked to format or run clang-format, after writing/editing .cpp/.hpp/.cc/.hh/.cxx/.h files, or before committing C++ changes.
+description: "Apply the project's .clang-format style via `clang-format -i`. Use when asked to format or run clang-format, after writing/editing .cpp/.hpp/.cc/.hh/.cxx/.h/.ixx files, or before committing C++ changes."
+argument-hint: "[paths...]"
+context: fork
 model: haiku
+background: false
+allowed-tools: Bash(clang-format *) Bash(git diff *) Bash(git ls-files *)
 ---
 
 # clang-format
@@ -13,15 +17,19 @@ Runs `clang-format -i` against the project's `.clang-format`
 skill's `references/coding-style.md`).
 
 ## Resolving the file set
+C++ extensions: `.cpp`, `.cc`, `.cxx`, `.h`, `.hh`, `.hpp`, `.ixx`.
+
 - Explicit paths given (`$ARGUMENTS`) → use exactly those.
 - Otherwise, uncommitted changes exist → `git diff --name-only` +
   `git diff --cached --name-only`, filtered to C++ extensions.
-- Otherwise (explicit whole-repo request only) → `src/`, `test_*.cpp`,
-  `wizard_of_oz_demo.cpp`. Never `third_party/` or `build/`.
+- Otherwise (explicit whole-repo request only) → `git ls-files`, filtered to
+  C++ extensions. Skip vendored and generated code: anything under
+  `third_party/`, `external/`, `vendor/`, or `build/`.
 
 ## Running
 `clang-format -i <files>` in one invocation. If `clang-format` isn't on
-PATH, say so and stop — don't guess a path.
+PATH, or the project has no `.clang-format`, say so and stop — don't guess a
+path or fall back to a built-in style.
 
 ## Reporting
 clang-format is silent on success, so report via `git diff --stat` after

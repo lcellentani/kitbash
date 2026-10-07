@@ -427,8 +427,8 @@ void display(const Sensor& s) {
 }
 
 // Con.5: Compile-time constants
-constexpr double PI = 3.14159265358979;
-constexpr int MAX_SENSORS = 256;
+constexpr double kPi = 3.14159265358979;
+constexpr int kMaxSensors = 256;
 ```
 
 ## Concurrency & Parallelism (CP.*)
@@ -586,9 +586,9 @@ std::cout << "result: " << value << '\n';
 | **Enum.6** | Avoid unnamed enumerations |
 
 ```cpp
-// Enum.3 + Enum.5: Scoped enum, no ALL_CAPS
-enum class Color { red, green, blue };
-enum class LogLevel { debug, info, warning, error };
+// Enum.3 + Enum.5: Scoped enum, no ALL_CAPS (enumerators are PascalCase here)
+enum class Color { Red, Green, Blue };
+enum class LogLevel { Debug, Info, Warning, Error };
 
 // BAD: plain enum leaks names, ALL_CAPS clashes with macros
 enum { RED, GREEN, BLUE };           // Enum.3 + Enum.5 + Enum.6 violation
@@ -608,7 +608,7 @@ enum { RED, GREEN, BLUE };           // Enum.3 + Enum.5 + Enum.6 violation
 | **NL.5** | Avoid encoding type information in names (no Hungarian notation) |
 | **NL.8** | Use a consistent naming style |
 | **NL.9** | Use ALL_CAPS for macro names only |
-| **NL.10** | Prefer `underscore_style` names |
+| **NL.10** | Prefer `underscore_style` names — this project applies it to functions and variables only; types are `PascalCase` (see `references/coding-style.md`) |
 
 ### Header Guard
 
@@ -663,12 +663,12 @@ Project modules import other project modules directly (`import project.x;`); not
 ### Naming Conventions
 
 ```cpp
-// NL.8 + NL.10: Consistent underscore_style
+// NL.8: one consistent style, per references/coding-style.md
 namespace my_project {
 
-constexpr int max_buffer_size = 4096;  // NL.9: not ALL_CAPS (it's not a macro)
+constexpr int kMaxBufferSize = 4096;   // NL.9: not ALL_CAPS (it's not a macro)
 
-class tcp_connection {                 // underscore_style class
+class TcpConnection {                  // PascalCase type
 public:
     void send_message(std::string_view msg);
     bool is_connected() const;
@@ -706,7 +706,7 @@ private:
 
 ```cpp
 // Per.11: Compile-time computation where possible
-constexpr auto lookup_table = [] {
+constexpr auto kLookupTable = [] {
     std::array<int, 256> table{};
     for (int i = 0; i < 256; ++i) {
         table[i] = i * i;
