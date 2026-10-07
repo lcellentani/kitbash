@@ -1,6 +1,6 @@
 {
   "name": "cpp-engine-conventions",
   "description": "Modern C++ (C++17/20/23) coding standards, this project's concrete style conventions, and clang-format automation for game-engine-style codebases",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": { "name": "Ludovico Cellentani" }
 }

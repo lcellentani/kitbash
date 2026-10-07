@@ -1,0 +1,29 @@
+{
+  "description": "Format C++ files Claude edited with clang-format, once at the end of each turn",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/clang-format-hook.sh record",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/clang-format-hook.sh flush",
+            "timeout": 60,
+            "statusMessage": "Formatting edited C++ files"
+          }
+        ]
+      }
+    ]
+  }
+}

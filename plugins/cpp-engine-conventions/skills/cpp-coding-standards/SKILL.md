@@ -23,7 +23,7 @@ Comprehensive coding standards for modern C++ (C++17/20/23) derived from the [C+
 
 ## Formatting & Naming Conventions
 
-The Core Guidelines below cover safety, idiom, and design — they don't prescribe concrete formatting or naming. For this project's exact rules (indentation, brace placement, pointer alignment, naming per identifier kind, file/module naming), see `references/coding-style.md`. Run `clang-format` (see the `clang-format` skill) to apply the mechanical parts automatically.
+The Core Guidelines below cover safety, idiom, and design — they don't prescribe concrete formatting or naming. For this project's exact rules (indentation, brace placement, pointer alignment, naming per identifier kind, file/module naming), see `references/coding-style.md`. The mechanical parts are applied by `clang-format`: this plugin's hook formats every C++ file Claude edits at the end of each turn, and the `clang-format` skill handles explicit runs.
 
 ## Cross-Cutting Principles
 
@@ -516,7 +516,7 @@ void transfer(Account& from, Account& to, double amount) {
 #include <concepts>
 
 // T.10 + T.11: Constrain templates with standard concepts
-template<std::integral T>
+template <std::integral T>
 T gcd(T a, T b) {
     while (b != 0) {
         a = std::exchange(b, a % b);
@@ -530,12 +530,12 @@ void sort(std::ranges::random_access_range auto& range) {
 }
 
 // Custom concept for domain-specific constraints
-template<typename T>
+template <typename T>
 concept Serializable = requires(const T& t) {
     { t.serialize() } -> std::convertible_to<std::string>;
 };
 
-template<Serializable T>
+template <Serializable T>
 void save(const T& obj, const std::string& path);
 ```
 

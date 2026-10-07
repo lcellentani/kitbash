@@ -149,7 +149,9 @@ void render(Context *ctx);
 ```
 
 ## Blank lines
-One blank line between method definitions. Two blank lines between top-level declarations in a file. No blank line immediately after an opening brace or before a closing brace.
+One blank line between top-level declarations and between function definitions — never two. No blank line immediately after the opening brace or before the closing brace of a function or class body (a namespace body may keep one). clang-format enforces all of this: it inserts the separating line between definitions and collapses any run of blank lines to one.
+
+Function bodies span multiple lines, except short functions defined inside a class body (e.g. `[[nodiscard]] bool is_running() const { return running_; }`) and empty bodies (`{}`).
 
 ```cpp
 void Widget::close() {
@@ -170,7 +172,7 @@ For C++20 module file structure and layout, see the `cpp-coding-standards` skill
 Concepts are named with `PascalCase` and defined in the module that owns the constraint.
 
 ```cpp
-export template<typename T>
+export template <typename T>
 concept Streamable = requires(const T& t, std::ostream& os) {
     { t.write(os) } -> std::same_as<void>;
 };
