@@ -81,7 +81,8 @@ cache). Two loops:
   session loads the plugin from the working tree, silently shadowing the installed copy of the same
   name; `/reload-plugins` picks up edits. Other projects keep the stable cached version.
 - **Publish**: bump `version` in that plugin's `plugin.json`, push, then `/plugin marketplace update
-  kitbash` followed by `/plugin update <plugin-name>@kitbash` (auto-update is off for this marketplace).
+  kitbash` — that refreshes the catalog *and* updates every installed plugin whose version changed
+  (auto-update is off for this marketplace, so this step is manual). Then `/reload-plugins` or restart.
 
 ## Versioning
 
