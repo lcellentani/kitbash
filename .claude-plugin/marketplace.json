@@ -1,6 +1,7 @@
 {
   "name": "kitbash",
   "owner": { "name": "Ludovico Cellentani" },
+  "description": "Personal Claude Code plugins: delegation-tier tracking, a spec-to-plan workflow, and C++ engine conventions",
   "plugins": [
     {
       "name": "core",

@@ -59,17 +59,35 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
   `coding-style.md`. Verified: no guideline content lost (line-level diff); live `claude -p` run read
   only coding-style + concurrency + source-files for a thread-safe header and followed every convention.
 
+## Phase 4 — done (2026-10-07)
+
+- ✅ 13 🟡 `claude plugin eval` suites (run commands in CLAUDE.md), one run per arm, ~$3 list-price total:
+
+  | Plugin | Case | With | W/out | Δ |
+  |---|---|---|---|---|
+  | core | tier-from-description | 1.00 | 0.00 | +1.00 |
+  | cpp-engine-conventions | hook-formats-claude-edits | 1.00 | 0.00 | +1.00 |
+  | cpp-engine-conventions | naming-conventions (2 runs/arm) | 1.00 | 0.60 | +0.40 |
+  | spec-plan-workflow | plan-draft-from-spec | 1.00 | 0.00 | +1.00 |
+  | spec-plan-workflow | spec-new-writes-spec | 1.00 | 0.00 | +1.00 |
+  | spec-plan-workflow | spec-review-flags-gaps | 1.00 | 1.00 | 0.00 |
+  | quartermaster-ledger | commit-message-format | — | — | needs-bash, not run on Windows |
+
+  Findings: (a) a plugin with `dependencies` doesn't load when evaluated from its own dir — cases list
+  both plugin dirs and run from `plugins/`; (b) naming Δ comes from the two places the conventions
+  differ from Google style (snake_case methods, PascalCase enumerators) — Claude already matches the
+  rest unaided; (c) spec-review's planted gaps are found without the skill too.
+
 ## Open
 
+- ⬜ 13b ⚪ spec-review eval with subtler gaps (unstated assumptions, status mismatch hidden in prose) so
+  its Δ measures the checklist, not obvious problems.
 
-- ⬜ 25b 🟡 Trim the per-area references to what Claude doesn't already know — needs the #13 eval
-  (with/without the skill) to decide; content was moved verbatim in phase 3, not trimmed.
+
+- ⬜ 25b 🟡 Trim the per-area references to what Claude doesn't already know. Eval evidence so far: the
+  naming table earns its place (Δ +0.40); add a case per reference area before cutting any of them.
 - ⬜ 12 🟡 Descriptions: lead with triggers, don't summarize the workflow (agents may follow the
   description instead of the body); move trigger phrases to `when_to_use`; check with `/skill-doctor`.
-- ⬜ 13 🟡 `claude plugin eval` suite per plugin (`evals/<case>/prompt.md` + `graders/*.md`; 2–3 cases
-  per skill; `--ablation none --runs 1` while iterating; `--max-cost-usd`). Bash-granting cases need
-  WSL2 (no sandbox backend on native Windows). Add `evals/**/results/` to `.gitignore`. Doubles as the
-  pre-v0.1.0 end-to-end proof.
 - ⬜ 15 ⚪ `claude plugin validate --strict`; look at `claude plugin tag` for the v0.1.0 tag.
 - ⬜ 16 🟡 `core:delegation-tiers`: one-line discriminators for T2/T3 and T3/T4 boundaries; description
   phrased as when-to-use.
@@ -80,5 +98,11 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
 - ⬜ 20 🟡 Inject review targets (`` !`git diff -- docs/plans/` ``) into the forked reviews.
 - ⬜ 21 ⚪ `userConfig` for `specs_dir` / `plans_dir` if a project ever needs different folders.
 - ⬜ 26 🟡 `paths:` globs on both C++ skills so they auto-load only around C++ files.
-- ⬜ 5 ⚪ Versions are 0.2.0/0.3.0 in manifests but nothing is tagged — reconcile at v0.1.0 tagging.
-- ⬜ 6 Release gate (CLAUDE.md): external-project install + exercise for all four plugins.
+- ⬜ 27 🟡 Pin the marketplace to a tag/ref so `v*` tags are a real stability boundary (today every
+  project tracks `main` on `/plugin marketplace update`). Check the marketplace-source ref syntax first.
+
+## Release
+
+- ✅ 5 / 6 / 15 Tagged `v0.1.0` (2026-10-07) after the eval suites and an external install-and-exercise
+  check in `flatline` from the GitHub-installed copies: core tier answer, git-commit empty-stage
+  injection, spec-new Draft spec, forked spec-review, and the Stop hook formatting a Claude-written file.
