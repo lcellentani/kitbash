@@ -75,7 +75,8 @@ exist without checking `plugins/` first.
 Behavior is tested with `claude plugin eval` suites in each plugin's `evals/` (one directory per case:
 `prompt.md` + `graders/*.md`, optional `case.yaml` + `setup.sh` fixtures). Each case runs with and
 without the plugin and reports the difference (Δ). Every run is a real, billed model call — iterate
-with `--runs 1`, and cap with `--max-cost-usd`.
+with `--runs 1`, and cap with `--max-cost-usd`. When and how to run them after a skill change (and how to
+read failures) is in `docs/context/evals-usage.md`.
 
 - **Dependency-free plugins** (`core`, `cpp-engine-conventions`): from the plugin dir,
   `claude plugin eval . --trust-plugin --runs 1 --allow-tools Write`.
