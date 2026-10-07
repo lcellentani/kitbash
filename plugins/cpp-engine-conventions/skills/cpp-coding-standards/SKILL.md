@@ -1,6 +1,7 @@
 ---
 name: cpp-coding-standards
-description: C++ coding standards based on the C++ Core Guidelines (isocpp.github.io), plus this project's concrete formatting and naming conventions. Use when writing, reviewing, or refactoring C++ code, making formatting/naming decisions, or enforcing consistent style across a C++ codebase.
+description: "Use when writing, reviewing, or refactoring C++ code, or making C++ formatting, naming, or design decisions."
+when_to_use: "C++ naming conventions, formatting, file layout, Core Guidelines questions, enforcing consistent style across a C++ codebase."
 ---
 
 # C++ Coding Standards (C++ Core Guidelines)

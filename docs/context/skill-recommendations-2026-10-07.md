@@ -78,6 +78,19 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
   differ from Google style (snake_case methods, PascalCase enumerators) — Claude already matches the
   rest unaided; (c) spec-review's planted gaps are found without the skill too.
 
+## Phase 5 — done (2026-10-07)
+
+- ✅ 16 🟡 `core:delegation-tiers`: "Telling adjacent tiers apart" section with one discriminator per
+  boundary (who wrote the landed code, who read it); description rewritten as a trigger, phrases in
+  `when_to_use`. New eval cases `tier-boundary-t4` / `tier-boundary-t2`: with 1.00, without 0.00 (Δ +1.00).
+- ✅ 18 🟡 `git-commit`: a missing/invalid tier argument no longer stops with a bare question. It
+  proposes a tier from the conversation (T2 guess if no evidence) and confirms via `AskUserQuestion`
+  (mandatory; `allowed-tools` extended). New `needs-bash` case `tier-proposed-when-missing` — written,
+  **not run** (no Bash sandbox on native Windows); run it under WSL2.
+- ✅ 12 🟡 All 9 descriptions lead with triggers; phrase lists and workflow summaries moved to
+  `when_to_use`. Validate passes; spec-plan-workflow and cpp-engine-conventions evals unchanged
+  (plan-draft +0.60, spec-new +0.25, spec-review 0.00, hook +1.00, naming +0.40). `/skill-doctor` not run.
+
 ## Open
 
 - ⬜ 13b ⚪ spec-review eval with subtler gaps (unstated assumptions, status mismatch hidden in prose) so
@@ -86,13 +99,7 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
 
 - ⬜ 25b 🟡 Trim the per-area references to what Claude doesn't already know. Eval evidence so far: the
   naming table earns its place (Δ +0.40); add a case per reference area before cutting any of them.
-- ⬜ 12 🟡 Descriptions: lead with triggers, don't summarize the workflow (agents may follow the
-  description instead of the body); move trigger phrases to `when_to_use`; check with `/skill-doctor`.
 - ⬜ 15 ⚪ `claude plugin validate --strict`; look at `claude plugin tag` for the v0.1.0 tag.
-- ⬜ 16 🟡 `core:delegation-tiers`: one-line discriminators for T2/T3 and T3/T4 boundaries; description
-  phrased as when-to-use.
-- ⬜ 18 🟡 `git-commit`, model-invoked with no tier: propose a tier with rationale, confirm via
-  `AskUserQuestion`.
 - ⬜ 19 ⚪ quartermaster-ledger cost reporting toolbox: `Stop`/`SessionEnd` hooks → `${CLAUDE_PLUGIN_DATA}`,
   `${CLAUDE_SESSION_ID}`, `PreToolUse` hook enforcing `[Tn]` on `git commit`.
 - ⬜ 20 🟡 Inject review targets (`` !`git diff -- docs/plans/` ``) into the forked reviews.

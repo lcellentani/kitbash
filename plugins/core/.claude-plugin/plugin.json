@@ -1,6 +1,6 @@
 {
   "name": "core",
   "description": "Cross-cutting conventions and primitives shared by other kitbash plugins (e.g. the delegation-tier taxonomy used by both commit messages and implementation plans)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": { "name": "Ludovico Cellentani" }
 }

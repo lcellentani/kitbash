@@ -1,6 +1,7 @@
 ---
 name: plan-update
-description: Update an existing Implementation Plan in place after a work session — phase/task status markers, Actual delegation tags, and the header Status field. Use after finishing implementation work on a task or phase, or whenever asked to update plan status, progress, or mark something done.
+description: "Use after finishing implementation work on a task or phase, or whenever asked to update plan status, progress, or mark something done."
+when_to_use: "\"mark task done\", \"update the plan\", \"phase complete\". Updates status markers, Actual delegation tags, and the header Status field in place."
 argument-hint: "[feature-slug]"
 ---
 

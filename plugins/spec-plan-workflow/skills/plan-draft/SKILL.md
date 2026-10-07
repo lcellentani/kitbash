@@ -1,6 +1,7 @@
 ---
 name: plan-draft
-description: Draft or extend a lean Implementation Plan from an approved SPEC — phased task breakdown, files-to-modify, acceptance criteria, and a per-task delegation tag. Use whenever asked to draft an implementation plan, break a spec into tasks, plan out a feature, or continue planning the next phase of an existing plan — even without the exact phrase "implementation plan."
+description: "Use whenever asked to draft an implementation plan, break a spec into tasks, plan out a feature, or continue planning the next phase of an existing plan."
+when_to_use: "Works even without the exact phrase \"implementation plan\". Needs an approved SPEC; produces phased tasks, files-to-modify, acceptance criteria, and per-task delegation tags."
 argument-hint: "[feature-slug]"
 ---
 

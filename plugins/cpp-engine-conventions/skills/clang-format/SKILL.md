@@ -1,6 +1,7 @@
 ---
 name: clang-format
-description: "Apply the project's .clang-format style via `clang-format -i` on request. Use when asked to format or run clang-format on specific files, uncommitted changes, or the whole repo, or to set up a .clang-format for a C++ project. Files Claude edits are already formatted automatically at the end of each turn by this plugin's hook."
+description: "Use when asked to format or run clang-format on specific files, uncommitted changes, or the whole repo, or to set up a .clang-format for a C++ project."
+when_to_use: "\"format this\", \"run clang-format\", \"set up a .clang-format\". Files Claude edits are already formatted automatically at the end of each turn by this plugin's hook, so this is for explicit runs only."
 argument-hint: "[paths...]"
 context: fork
 model: haiku

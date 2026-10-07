@@ -1,6 +1,7 @@
 ---
 name: spec-review
-description: Audit a SPEC for ambiguity, missing non-goals, unfalsifiable goals, or unresolved open questions before implementation planning starts. Use whenever a spec has just been drafted or edited and before it's declared ready, or whenever the user asks to review, check, or audit a spec.
+description: "Use whenever a SPEC has just been drafted or edited and before it's declared ready, or when the user asks to review, check, or audit a spec."
+when_to_use: "\"review the spec\", \"is this spec ready\". Audits for ambiguity, missing non-goals, unfalsifiable goals, and unresolved open questions before planning."
 argument-hint: "[feature-slug | path]"
 context: fork
 agent: Explore

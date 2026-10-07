@@ -1,8 +1,9 @@
 ---
 name: git-commit
-description: "Draft a git commit message for the staged changes, tagged with its delegation tier ([Tn] type(scope): subject). Use when asked to write or draft a commit message, before committing staged changes, or on /git-commit. Produces the message only — it doesn't run git commit."
+description: "Use when asked to write or draft a commit message, or before committing staged changes. Produces the message only; it doesn't run git commit."
+when_to_use: "\"write a commit message\", \"draft the commit\", \"commit these changes\", /git-commit. Messages are tagged [Tn] type(scope): subject with a delegation tier."
 argument-hint: "[T1|T2|T3|T4]"
-allowed-tools: Bash(git diff *)
+allowed-tools: Bash(git diff *) AskUserQuestion
 ---
 
 # git-commit
@@ -17,9 +18,18 @@ If the staged changes above are empty, say nothing is staged and stop.
 
 ## Delegation tier
 
-The delegation tier is: $ARGUMENTS
-Valid values: T1, T2, T3, T4 — see the `core:delegation-tiers` skill for what each tier means.
-If $ARGUMENTS is empty or not a valid tier, stop and ask: "Which delegation tier? (T1/T2/T3/T4)"
+The delegation tier argument is: $ARGUMENTS
+Valid values: T1, T2, T3, T4 — see the `core:delegation-tiers` skill for what each tier means and
+how to tell adjacent tiers apart.
+
+- If the argument is a valid tier, use it without asking.
+- Otherwise, propose a tier and confirm it before drafting:
+  1. Judge from this conversation who wrote the staged code and whether the author read it, using
+     the `core:delegation-tiers` discriminators. If the conversation gives no evidence, propose
+     the higher-ownership tier (T2) and say the rationale is a guess.
+  2. Call `AskUserQuestion` with one question, "Which delegation tier for this commit?". Put your
+     proposed tier first, labeled "<Tn> (Recommended)", with the one-line rationale as its
+     description; list the other three tiers as options. Don't draft the message until answered.
 
 ## Format
 
@@ -44,4 +54,5 @@ If the staged diff spans unrelated concerns, propose how to split into separate 
 
 ## Output
 
-Output only the final message(s), ready to copy. No explanation.
+Once the tier is settled, output only the final message(s), ready to copy. No explanation (this
+doesn't apply to the tier confirmation above).

@@ -1,6 +1,7 @@
 ---
 name: plan-review
-description: Audit an Implementation Plan against engineering-principles and completeness checks before implementation starts. Use whenever a plan has just been drafted or edited, before starting work on it, or whenever the user asks to review, check, or approve a plan.
+description: "Use whenever an Implementation Plan has just been drafted or edited, before starting work on it, or when the user asks to review, check, or approve a plan."
+when_to_use: "\"review the plan\", \"is this plan ready\", \"check the plan\". Audits against engineering-principles and completeness checks."
 argument-hint: "[feature-slug | path]"
 context: fork
 agent: Explore

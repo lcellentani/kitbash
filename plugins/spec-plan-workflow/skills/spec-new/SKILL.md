@@ -1,6 +1,7 @@
 ---
 name: spec-new
-description: Draft a new SPEC design document for a feature — problem statement, goals, non-goals, design approach, and open questions — before any implementation planning begins. Use this whenever the user wants to start a new feature, asks to "write a spec" or "design doc," or describes a feature idea that hasn't been scoped yet, even if they don't use the word "spec." Always run this before drafting an implementation plan for any feature with no existing SPEC file.
+description: "Use whenever the user wants to start a new feature, asks to \"write a spec\" or \"design doc\", or describes a feature idea that hasn't been scoped yet. Run before drafting an implementation plan for any feature with no existing SPEC file."
+when_to_use: "Works even if the user doesn't say \"spec\". Produces a problem statement, goals, non-goals, design approach, and open questions."
 argument-hint: "[feature-name]"
 ---
 
