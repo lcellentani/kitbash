@@ -74,8 +74,14 @@ There is no build, lint, or test suite yet — plugin correctness is verified vi
 and by installing + exercising the plugin in a real project.
 
 Installed plugins are **cached**, not read live from this repo — editing a skill here does not affect an
-already-installed copy. To pick up local edits: bump `version` in that plugin's `plugin.json`, then
-`/plugin marketplace update kitbash` followed by `/plugin update <plugin-name>@kitbash`.
+already-installed copy (the `kitbash` marketplace is registered from GitHub, and each `version` pins the
+cache). Two loops:
+
+- **Develop**: `claude --plugin-dir ./plugins/<plugin-name>` (repeatable for several plugins). That
+  session loads the plugin from the working tree, silently shadowing the installed copy of the same
+  name; `/reload-plugins` picks up edits. Other projects keep the stable cached version.
+- **Publish**: bump `version` in that plugin's `plugin.json`, push, then `/plugin marketplace update
+  kitbash` followed by `/plugin update <plugin-name>@kitbash` (auto-update is off for this marketplace).
 
 ## Versioning
 
