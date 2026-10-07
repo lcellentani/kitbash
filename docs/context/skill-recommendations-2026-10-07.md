@@ -91,6 +91,60 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
   `when_to_use`. Validate passes; spec-plan-workflow and cpp-engine-conventions evals unchanged
   (plan-draft +0.60, spec-new +0.25, spec-review 0.00, hook +1.00, naming +0.40). `/skill-doctor` not run.
 
+## Phase 6 — planned (items 15 + 27, not started)
+
+Deliberately **not** executed in the session that logged it. The two items are coupled and the real work
+is deciding a release model, so it needs a dedicated session with room to explore the problem, weigh
+trade-offs and decide at a deliberate pace — not a quick edit pass.
+
+- ⬜ 15 ⚪ `claude plugin validate --strict` and `claude plugin tag`.
+- ⬜ 27 🟡 Pin the marketplace to a tag/ref so `v*` tags are a real stability boundary (today every
+  project tracks `main` on `/plugin marketplace update`).
+
+### What 15 is
+
+Release hygiene, two halves:
+
+1. **`--strict` validation.** Plain `validate` only checks manifests are well-formed; `--strict` is the
+   stricter pre-release check. Status: already run (2026-10-07) on all four plugins and on the root
+   marketplace manifest — **all five pass**. Nothing to fix; it remains to make it a standing
+   pre-release step (e.g. written into CLAUDE.md's Commands).
+2. **`claude plugin tag`.** Creates a `{plugin}--v{version}` git tag per plugin (e.g. `core--v0.2.0`),
+   after checking that `plugin.json` and the enclosing marketplace entry agree on the version. Options:
+   `--dry-run`, `--push`, `--remote`, `-m/--message`, `-f/--force`; it refuses a dirty tree or an
+   existing tag unless forced. The audit asked to look at it for the `v0.1.0` tag; that tag was made by
+   hand instead (repo-wide, `v0.1.0`, the only tag today), so the tool has never been used here.
+
+### How 15 and 27 connect
+
+- **Pinning needs something to pin to.** 27 only helps if the ref it points at is meaningful. That
+  depends on 15's tagging scheme.
+- **`claude plugin tag` enforces the `plugin.json` ↔ marketplace-entry version agreement**, which is the
+  guard that keeps a pin honest.
+- Current versions differ per plugin (core 0.2.0, cpp-engine-conventions 0.5.0, quartermaster-ledger
+  0.4.0, spec-plan-workflow 0.3.0), and the one existing tag is a single repo-wide `v0.1.0`. The two
+  tag models don't line up: per-plugin tags (`core--v0.2.0`) describe releases accurately; a repo-wide
+  tag is simpler to pin a marketplace to.
+
+### Open questions to settle in the session
+
+1. **Ref syntax.** What does a marketplace-source ref look like (tag, branch, commit; in `marketplace.json`
+   and in `/plugin marketplace add`)? Check the docs first — it decides which tagging model can work at all.
+2. **Tagging model.** One repo-wide tag per release, per-plugin tags via `claude plugin tag`, or both
+   (per-plugin tags for history, a repo-wide tag as the pin target)?
+3. **Trade-off to confirm.** Pinning stops `/plugin marketplace update` from tracking `main`; every
+   project then needs its pin moved to receive changes. That is the price of stability. Today every
+   project follows `main` automatically — confirm the new friction fits the workflow, and how pin bumps
+   are done (per project, or once if the pin lives in the marketplace registration).
+4. **Existing `v0.1.0`.** Keep as-is, retag, or leave as history once a new scheme exists.
+
+### Suggested approach
+
+Find the ref syntax in the docs; run `claude plugin tag --dry-run` per plugin to see what it would
+create; choose the tagging model; then pin, and prove it end-to-end from an external project (as done
+for v0.1.0 in `flatline`): install pinned, move the pin, update, confirm the change arrives.
+
+
 ## Open
 
 - ⬜ 13b ⚪ spec-review eval with subtler gaps (unstated assumptions, status mismatch hidden in prose) so
@@ -99,14 +153,11 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
 
 - ⬜ 25b 🟡 Trim the per-area references to what Claude doesn't already know. Eval evidence so far: the
   naming table earns its place (Δ +0.40); add a case per reference area before cutting any of them.
-- ⬜ 15 ⚪ `claude plugin validate --strict`; look at `claude plugin tag` for the v0.1.0 tag.
 - ⬜ 19 ⚪ quartermaster-ledger cost reporting toolbox: `Stop`/`SessionEnd` hooks → `${CLAUDE_PLUGIN_DATA}`,
   `${CLAUDE_SESSION_ID}`, `PreToolUse` hook enforcing `[Tn]` on `git commit`.
 - ⬜ 20 🟡 Inject review targets (`` !`git diff -- docs/plans/` ``) into the forked reviews.
 - ⬜ 21 ⚪ `userConfig` for `specs_dir` / `plans_dir` if a project ever needs different folders.
 - ⬜ 26 🟡 `paths:` globs on both C++ skills so they auto-load only around C++ files.
-- ⬜ 27 🟡 Pin the marketplace to a tag/ref so `v*` tags are a real stability boundary (today every
-  project tracks `main` on `/plugin marketplace update`). Check the marketplace-source ref syntax first.
 
 ## Release
 
