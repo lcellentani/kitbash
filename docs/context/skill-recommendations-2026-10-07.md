@@ -50,12 +50,20 @@ empty), `clang-format` (fork formatted the file), `spec-review` (fork returned f
 Verified: script unit test (filtering, dedupe, cleanup) and a live `claude -p --plugin-dir` run where a
 Claude-written file was formatted at Stop and an untouched file wasn't.
 
+## Phase 3 — done (2026-10-07)
+
+- ✅ 4 / 25 🔴 `cpp-coding-standards` SKILL.md 749 → 86 lines: project naming cheat sheet, cross-cutting
+  principles, a "read this file when deciding X" index, and the checklist. The 13 Core Guidelines
+  sections moved verbatim into 10 `references/*.md` files (each says `coding-style.md` wins on naming).
+  The C++20 module file layout — a project convention, not a Core Guideline — moved into
+  `coding-style.md`. Verified: no guideline content lost (line-level diff); live `claude -p` run read
+  only coding-style + concurrency + source-files for a thread-safe header and followed every convention.
+
 ## Open
 
 
-- ⬜ 4 🔴 / 25 Restructure `cpp-coding-standards` (749 lines; docs recommend <500): slim SKILL.md
-  (project conventions, cross-cutting principles, checklist) + per-area `references/*.md`. Use an eval
-  with/without the skill to decide what Claude doesn't already know.
+- ⬜ 25b 🟡 Trim the per-area references to what Claude doesn't already know — needs the #13 eval
+  (with/without the skill) to decide; content was moved verbatim in phase 3, not trimmed.
 - ⬜ 12 🟡 Descriptions: lead with triggers, don't summarize the workflow (agents may follow the
   description instead of the body); move trigger phrases to `when_to_use`; check with `/skill-doctor`.
 - ⬜ 13 🟡 `claude plugin eval` suite per plugin (`evals/<case>/prompt.md` + `graders/*.md`; 2–3 cases
