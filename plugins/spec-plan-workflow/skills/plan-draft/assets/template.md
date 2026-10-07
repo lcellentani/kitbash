@@ -102,4 +102,4 @@
 | In Progress | Currently being implemented |
 | Done | Phase implemented and verified |
 
-Update the header `Status` field as phases complete (e.g. `In Progress (2/4 phases done)`). `/plan-update` does this automatically.
+Update the header `Status` field as phases complete (e.g. `In Progress (2/4 phases done)`). `/spec-plan-workflow:plan-update` does this automatically.

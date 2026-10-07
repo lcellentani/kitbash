@@ -1,7 +1,7 @@
 {
   "name": "spec-plan-workflow",
   "description": "Spec-to-plan authoring and review pipeline: draft SPECs, draft Implementation Plans against them, audit both, and update plan status as work progresses",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": { "name": "Ludovico Cellentani" },
   "dependencies": ["core"]
 }

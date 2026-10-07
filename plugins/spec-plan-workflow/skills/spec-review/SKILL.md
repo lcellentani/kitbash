@@ -1,6 +1,10 @@
 ---
 name: spec-review
 description: Audit a SPEC for ambiguity, missing non-goals, unfalsifiable goals, or unresolved open questions before implementation planning starts. Use whenever a spec has just been drafted or edited and before it's declared ready, or whenever the user asks to review, check, or audit a spec.
+argument-hint: "[feature-slug | path]"
+context: fork
+agent: Explore
+background: false
 ---
 
 # spec-review
@@ -12,9 +16,7 @@ Review a SPEC for gaps: $ARGUMENTS
 
 A spec-level audit: read-only, returns a structured findings list, and never edits the spec itself — the same checkpoint discipline this workflow uses before any content gets relied on downstream.
 
-## Context efficiency
-
-If a subagent (Task tool) is available, delegate the audit to it: pass it the spec file and this checklist, and have it return only the structured findings list. Gap analysis tends to be verbose reasoning that doesn't need to live in the main session's context — only the conclusions do.
+This skill runs in a forked read-only subagent, so it doesn't see the conversation that produced the spec — judge the spec file on its own. Return only the findings list; the gap-analysis reasoning stays in the fork.
 
 ## Checklist
 
@@ -29,4 +31,4 @@ If a subagent (Task tool) is available, delegate the audit to it: pass it the sp
 
 For each finding: `[Severity] Section — what's wrong — suggested fix.` Severity is one of `Blocking` (don't plan against this yet), `Should-fix` (fixable in five minutes, do it before planning), `Nice-to-have` (note it, don't block on it).
 
-If there are no findings: say so plainly — `No gaps found — ready for /plan-draft.` Don't manufacture findings to seem thorough.
+If there are no findings: say so plainly — `No gaps found — ready for /spec-plan-workflow:plan-draft.` Don't manufacture findings to seem thorough.

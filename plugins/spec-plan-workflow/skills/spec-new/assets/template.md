@@ -38,11 +38,11 @@
 
 ### How It Fits Existing Systems
 
-[Which existing modules/patterns this touches or reuses, e.g. ECS components, render passes, input bindings.]
+[Which existing modules/patterns this touches or reuses, e.g. modules, data models, pipelines, interfaces.]
 
 ## 5. Open Questions
 
-[Anything genuinely unresolved. Don't silently resolve these by assumption — flag them here so `/spec-review` and `/plan-draft` both see them.]
+[Anything genuinely unresolved. Don't silently resolve these by assumption — flag them here so `/spec-plan-workflow:spec-review` and `/spec-plan-workflow:plan-draft` both see them.]
 
 - [ ] [Open question 1]
 - [ ] [Open question 2]
@@ -54,6 +54,6 @@
 | Status | Meaning |
 |--------|---------|
 | Draft | Still being shaped; open questions may exist |
-| Ready | Open questions resolved; safe to run `/plan-draft` |
+| Ready | Open questions resolved; safe to run `/spec-plan-workflow:plan-draft` |
 | Implemented | All linked plan phases are Done |
 | Superseded | Replaced by a newer spec — link it above |

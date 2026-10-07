@@ -1,6 +1,7 @@
 ---
 name: plan-draft
 description: Draft or extend a lean Implementation Plan from an approved SPEC — phased task breakdown, files-to-modify, acceptance criteria, and a per-task delegation tag. Use whenever asked to draft an implementation plan, break a spec into tasks, plan out a feature, or continue planning the next phase of an existing plan — even without the exact phrase "implementation plan."
+argument-hint: "[feature-slug]"
 ---
 
 # plan-draft
@@ -9,16 +10,16 @@ Draft or extend the Implementation Plan for: $ARGUMENTS
 
 If no feature slug was given, ask for one before doing anything else — don't guess which plan to touch.
 
-Produces or extends `docs/plans/<feature-slug>.md`, following the structure in `assets/template.md` (bundled with this skill).
+Produces or extends `docs/plans/<feature-slug>.md`, following the structure in `${CLAUDE_SKILL_DIR}/assets/template.md`.
 
 ## Preconditions
 
-- A matching spec must exist at `docs/specs/<feature-slug>.md`. If it doesn't, stop and tell the user to run `/spec-new` first — don't draft a plan against an assumed spec.
+- A matching spec must exist at `docs/specs/<feature-slug>.md`. If it doesn't, stop and tell the user to run `/spec-plan-workflow:spec-new` first — don't draft a plan against an assumed spec.
 - Pull Goal, Scope, and Approach context from the spec rather than re-deriving them. The plan should never contradict its spec.
 
 ## Research before drafting
 
-Don't write the Files to Modify table or LOC estimates from memory or assumption — ground them in the actual current codebase. If a subagent (Task tool) is available, delegate the exploration: have it locate the files the spec's "How It Fits Existing Systems" section points at, confirm current line counts/structure, and check for existing patterns to reuse, then return only the findings. Same reasoning as the `spec-review`/`plan-review` context-efficiency note — exploration is verbose, the main session only needs the result.
+Don't write the Files to Modify table or LOC estimates from memory or assumption — ground them in the actual current codebase. Delegate the exploration to an Explore subagent: have it locate the files the spec's "How It Fits Existing Systems" section points at, confirm current line counts/structure, and check for existing patterns to reuse, then return only the findings. Exploration is verbose; the main session only needs the result.
 
 This is deliberately not run via Claude Code's built-in Plan Mode. Plan Mode is read-only end to end and would block the file write this skill ends with; it's also a separate, ephemeral artifact (`~/.claude/plans/`) from the durable plan this skill produces. Don't conflate the two — if the user says "enter plan mode," that's the permission-mode toggle, not this skill.
 
@@ -26,7 +27,7 @@ This is deliberately not run via Claude Code's built-in Plan Mode. Plan Mode is 
 
 These govern every decision in the plan:
 
-- **Minimal footprint** — fewest files touched, fewest LOC. Reuse existing infrastructure (ECS components, helpers, patterns already in the codebase) rather than reinventing it. No speculative abstraction for a pattern used once.
+- **Minimal footprint** — fewest files touched, fewest LOC. Reuse existing infrastructure (components, helpers, patterns already in the codebase) rather than reinventing it. No speculative abstraction for a pattern used once.
 - **Safe implementation** — new behavior should be invisible until explicitly triggered. No breaking changes to existing workflows when the new feature is inactive.
 - **Least code changes** — if a refactor "would be nice" but isn't required, exclude it and note it as future work instead of folding it in.
 - **Every task has acceptance criteria** — testable assertions, not vague descriptions.
@@ -50,4 +51,4 @@ If `docs/plans/<feature-slug>.md` already exists with completed phases, **append
 
 ## After writing
 
-Tell the user the file path and phase count, and suggest `/plan-review` before starting implementation.
+Tell the user the file path and phase count, and suggest `/spec-plan-workflow:plan-review` before starting implementation.

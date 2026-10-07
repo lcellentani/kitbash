@@ -1,6 +1,10 @@
 ---
 name: plan-review
 description: Audit an Implementation Plan against engineering-principles and completeness checks before implementation starts. Use whenever a plan has just been drafted or edited, before starting work on it, or whenever the user asks to review, check, or approve a plan.
+argument-hint: "[feature-slug | path]"
+context: fork
+agent: Explore
+background: false
 ---
 
 # plan-review
@@ -12,9 +16,7 @@ Review an Implementation Plan: $ARGUMENTS
 
 A plan-level audit: read-only, returns a structured findings list, and never edits the plan itself — the checkpoint between drafting and acting on it.
 
-## Context efficiency
-
-If a subagent (Task tool) is available, delegate the audit to it and have it return only the structured findings list — same reasoning as `spec-review`.
+This skill runs in a forked read-only subagent, so it doesn't see the conversation that produced the plan — judge the plan file (and its spec, for scope drift) on their own. Return only the findings list.
 
 ## Checklist
 
@@ -23,7 +25,7 @@ If a subagent (Task tool) is available, delegate the audit to it and have it ret
 - **Every phase has a rollback line.**
 - **Files to Modify entries have an LOC estimate and a risk rating** — an empty or vague entry is a gap.
 - **Scope is explicit** — In Scope / Out of Scope aren't left as inherited boilerplate from the spec without being checked against what the tasks actually do.
-- **No scope drift from the spec** — if a task does something the spec's Non-Goals excluded, or introduces a goal the spec never stated, flag it. That's a signal to go back to `/spec-review` or amend the spec, not silently expand the plan.
+- **No scope drift from the spec** — if a task does something the spec's Non-Goals excluded, or introduces a goal the spec never stated, flag it. That's a signal to go back to `/spec-plan-workflow:spec-review` or amend the spec, not silently expand the plan.
 - **No TODO/TBD left in the body.**
 - **Phase/task numbering is consistent** if this is an appended plan (Phase 2 doesn't quietly restart at Task 1.1).
 
