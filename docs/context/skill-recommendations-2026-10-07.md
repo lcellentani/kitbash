@@ -87,6 +87,10 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
   proposes a tier from the conversation (T2 guess if no evidence) and confirms via `AskUserQuestion`
   (mandatory; `allowed-tools` extended). New `needs-bash` case `tier-proposed-when-missing` — written,
   **not run** (no Bash sandbox on native Windows); run it under WSL2.
+  **Verified in real use (2026-10-25 check):** in `flywheel`, from the installed 0.4.0 copy (commit
+  `d045d73`), sessions on 2026-10-08 and 2026-10-12 called `git-commit` with no tier; it asked "Which
+  delegation tier for this commit?" with a conversation-based `T4 (Recommended)` option, and `core` was
+  auto-installed as a dependency. The eval stays useful as a regression guard, not as the only proof.
 - ✅ 12 🟡 All 9 descriptions lead with triggers; phrase lists and workflow summaries moved to
   `when_to_use`. Validate passes; spec-plan-workflow and cpp-engine-conventions evals unchanged
   (plan-draft +0.60, spec-new +0.25, spec-review 0.00, hook +1.00, naming +0.40). `/skill-doctor` not run.
