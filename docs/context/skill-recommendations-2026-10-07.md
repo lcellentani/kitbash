@@ -95,11 +95,12 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
   `when_to_use`. Validate passes; spec-plan-workflow and cpp-engine-conventions evals unchanged
   (plan-draft +0.60, spec-new +0.25, spec-review 0.00, hook +1.00, naming +0.40). `/skill-doctor` not run.
 
-## Phase 6 — planned (items 15 + 27, not started)
+## Phase 6 — in progress (items 15 + 27)
 
 Deliberately **not** executed in the session that logged it. The two items are coupled and the real work
 is deciding a release model, so it needs a dedicated session with room to explore the problem, weigh
-trade-offs and decide at a deliberate pace — not a quick edit pass.
+trade-offs and decide at a deliberate pace — not a quick edit pass. 2026-10-25: ref syntax researched,
+release model decided (see "Findings", "Release model" and "Release checklist" below); setup not started.
 
 - ⬜ 15 ⚪ `claude plugin validate --strict` and `claude plugin tag`.
 - ⬜ 27 🟡 Pin the marketplace to a tag/ref so `v*` tags are a real stability boundary (today every
@@ -130,23 +131,102 @@ Release hygiene, two halves:
   tag models don't line up: per-plugin tags (`core--v0.2.0`) describe releases accurately; a repo-wide
   tag is simpler to pin a marketplace to.
 
-### Open questions to settle in the session
+### Open questions — all decided 2026-10-25
 
 1. **Ref syntax.** What does a marketplace-source ref look like (tag, branch, commit; in `marketplace.json`
    and in `/plugin marketplace add`)? Check the docs first — it decides which tagging model can work at all.
+   → Answered, see Findings.
 2. **Tagging model.** One repo-wide tag per release, per-plugin tags via `claude plugin tag`, or both
    (per-plugin tags for history, a repo-wide tag as the pin target)?
+   → **Decided:** per-plugin tags as the record, a `release` branch as the pin target (see Release model).
 3. **Trade-off to confirm.** Pinning stops `/plugin marketplace update` from tracking `main`; every
    project then needs its pin moved to receive changes. That is the price of stability. Today every
    project follows `main` automatically — confirm the new friction fits the workflow, and how pin bumps
    are done (per project, or once if the pin lives in the marketplace registration).
+   → **Accepted.** With a `release` branch the pin never moves per machine; the friction is one
+   fast-forward per release. The model relies on discipline, which is acceptable because it is written
+   down as a checklist and its risky steps are checked by `git` and `claude plugin tag` (see Release
+   checklist).
 4. **Existing `v0.1.0`.** Keep as-is, retag, or leave as history once a new scheme exists.
+   → **Decided:** keep as history; no mechanism reads a repo-wide tag except a marketplace-level `#ref`.
+5. **`core` version ranges** in `quartermaster-ledger` / `spec-plan-workflow` (raised by the Findings).
+   → **Decided: not now.** All three ship from the same `release` branch, so they are always released
+   and tested together; a range only guards against `core` being released apart from its dependents.
+   Revisit if `core` ever makes a breaking change.
 
-### Suggested approach
+### Findings (2026-10-25, docs on code.claude.com + `claude` 2.1.310)
 
-Find the ref syntax in the docs; run `claude plugin tag --dry-run` per plugin to see what it would
-create; choose the tagging model; then pin, and prove it end-to-end from an external project (as done
-for v0.1.0 in `flatline`): install pinned, move the pin, update, confirm the change arrives.
+Sources: plugins/marketplace-reference, plugins/host-marketplace, plugins/dependencies.
+
+- **Marketplace-level pin.** `/plugin marketplace add lcellentani/kitbash#<ref>` (`@<ref>` also accepted)
+  stores `"ref"` (branch or tag) on the marketplace source; default is the repo's default branch. It
+  pins the catalog *and* every relative-path plugin, since `./plugins/<name>` resolves inside that
+  checkout. The pin lives in each machine's registration (or `extraKnownMarketplaces`).
+- **Entry-level pin.** `github`, `url` and `git-subdir` plugin sources take `ref` (branch or tag) and
+  `sha` (full 40-char commit; wins over `ref`). For this monorepo that means
+  `{ "source": "git-subdir", "url": "lcellentani/kitbash", "path": "plugins/core", "ref": "core--v0.2.0" }`.
+  Relative-path sources can't carry a ref. Non-relative entries show only the entry's own fields in
+  `/plugin` before install.
+- **Updates are detected by computed `version`, not ref.** A moved pin with an unchanged `version` leaves
+  users on their cached copy. Every release still needs the bump.
+- **`<plugin>--v<version>` tags are the official convention.** `claude plugin tag` creates them after
+  validating, checking `plugin.json` ↔ marketplace entry version agreement, requiring a clean tree and
+  refusing an existing tag. Dependency version ranges (e.g. `{ "name": "core", "version": "^0.2" }`)
+  resolve against these tags; for a relative-path dependency with no matching tag, the marketplace's
+  current copy is used and the range is checked at load.
+- **Dry run at `7126272`** (all four pass the version-agreement check): `core--v0.2.0`,
+  `quartermaster-ledger--v0.4.0`, `spec-plan-workflow--v0.3.0`, `cpp-engine-conventions--v0.5.0`.
+
+### Release model (decided 2026-10-25, not yet set up)
+
+- **`release` branch as the distribution pointer.** Each machine registers `lcellentani/kitbash#release`
+  once. `marketplace.json` stays on relative paths. `main` is where work happens; nothing on it reaches
+  an install (existing or fresh) until `release` moves. This is the docs' release-channel pattern with
+  a single channel.
+- **Per-plugin tags as the record.** Each release commit gets `<plugin>--v<version>` tags via
+  `claude plugin tag --push` for the plugins it bumps: fixed points to diff or roll back to, and the
+  targets dependency ranges would resolve against if they are ever added.
+- **Rule:** `release` only ever fast-forwards from `main`; never commit on it directly. Otherwise the same
+  version number can again mean different content.
+- **Mechanical guards** behind the rules, so the protocol doesn't rest on memory alone:
+
+  | Rule | Guard |
+  |---|---|
+  | `release` only fast-forwards from `main` | Release with `git push origin main:release` — git rejects a non-fast-forward without `--force`. A GitHub ruleset on `release` blocks force-push and deletion. |
+  | Every changed plugin gets a version bump | `git diff <plugin>--v<version>..main -- plugins/<plugin>`: changes since the last tag with an unchanged version mean a missed bump. `claude plugin tag` also refuses an existing tag. |
+  | `plugin.json` and marketplace entry agree | `claude plugin tag` checks it before tagging. |
+  | Manifests are valid | `claude plugin validate --strict`, first step of the checklist. |
+
+  If steps ever get skipped in practice, turn the checklist into a project-local `release` skill.
+- Rejected alternative: per-entry `git-subdir` pins to tags — fixed per-plugin pins and no per-machine
+  step, but a catalog edit per release and non-relative entries. Revisit if plugins ever need to
+  release on independent lines.
+
+### Release checklist (goes into CLAUDE.md in setup step 5)
+
+1. On `main`, clean tree, up to date with `origin/main`.
+2. For each plugin, `git diff <plugin>--v<version>..main -- plugins/<plugin>`. Any plugin with changes
+   gets a `version` bump in its `plugin.json`; commit the bumps.
+3. `claude plugin validate --strict` on each plugin and on the repo root (marketplace manifest).
+4. `git push origin main` then `git push origin main:release` (fast-forward only; never `--force`).
+5. `claude plugin tag plugins/<plugin> --push` for each bumped plugin.
+6. `/plugin marketplace update kitbash` on each machine (or rely on auto-update), then `/reload-plugins`.
+
+### Setup steps
+
+1. ✅ Decide the model and the open questions (2026-10-25).
+2. ⬜ Create `release` at the current `main`; tag the four plugins at that commit (`claude plugin tag
+   --push`).
+3. ⬜ Add a GitHub ruleset on `release`: block force-push and deletion.
+4. ⬜ Migrate this machine's registration to `#release`. Caution: `claude plugin marketplace remove`
+   uninstalls the marketplace's plugins — prefer changing the source `ref` in settings, or reinstall
+   after remove + re-add. Repeat on other machines.
+5. ⬜ Document the release model and checklist in CLAUDE.md (Commands + Versioning).
+6. ⬜ Check before relying on it: does an update apply a *lower* version (rollback by moving `release`
+   back)? Docs say a copy updates when the version "differs".
+7. ⬜ Prove end-to-end from an external project (as done for v0.1.0 in `flatline`): install from
+   `#release`, push an unreleased change to `main` and confirm it doesn't arrive, release it and
+   confirm it does.
 
 
 ## Open
