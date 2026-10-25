@@ -100,7 +100,8 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
 Deliberately **not** executed in the session that logged it. The two items are coupled and the real work
 is deciding a release model, so it needs a dedicated session with room to explore the problem, weigh
 trade-offs and decide at a deliberate pace — not a quick edit pass. 2026-10-25: ref syntax researched,
-release model decided (see "Findings", "Release model" and "Release checklist" below); setup not started.
+release model decided (see "Findings", "Release model" and "Release checklist" below); setup steps 2–4
+and 6 done, CLAUDE.md docs and the end-to-end proof remain.
 
 - ⬜ 15 ⚪ `claude plugin validate --strict` and `claude plugin tag`.
 - ⬜ 27 🟡 Pin the marketplace to a tag/ref so `v*` tags are a real stability boundary (today every
@@ -215,15 +216,26 @@ Sources: plugins/marketplace-reference, plugins/host-marketplace, plugins/depend
 ### Setup steps
 
 1. ✅ Decide the model and the open questions (2026-10-25).
-2. ⬜ Create `release` at the current `main`; tag the four plugins at that commit (`claude plugin tag
-   --push`).
-3. ⬜ Add a GitHub ruleset on `release`: block force-push and deletion.
-4. ⬜ Migrate this machine's registration to `#release`. Caution: `claude plugin marketplace remove`
-   uninstalls the marketplace's plugins — prefer changing the source `ref` in settings, or reinstall
-   after remove + re-add. Repeat on other machines.
+2. ✅ (2026-10-25) `release` created at `4977147` (= `main`) and pushed. Tags `core--v0.2.0`,
+   `quartermaster-ledger--v0.4.0`, `spec-plan-workflow--v0.3.0`, `cpp-engine-conventions--v0.5.0`
+   created with `claude plugin tag --push`, all at `4977147`.
+3. ✅ (2026-10-25) GitHub ruleset "release branch protection" (id 25827063) on `refs/heads/release`:
+   `non_fast_forward` + `deletion`, no bypass actors — it applies to the owner too.
+4. ✅ (2026-10-25, this Windows machine) Registration now `lcellentani/kitbash@release`; all four
+   plugins enabled at the same versions. How to migrate a machine (repeat on others):
+   - Add `"ref": "release"` to the `kitbash` source under `extraKnownMarketplaces` in
+     `~/.claude/settings.json`. Don't use `marketplace remove` (it uninstalls the plugins).
+   - Then start a **new interactive** `claude` session: its background check sees the changed source,
+     re-fetches from `release` and says `Plugins changed. Run /reload-plugins to activate.` Run
+     `/reload-plugins`.
+   - Gotcha: until that happens, shell commands compare the new settings against the stale
+     `known_marketplaces.json` — `claude plugin marketplace update kitbash` reports
+     `Marketplace 'kitbash' not found` and `claude plugin list` shows the plugins as
+     `failed to load`. Expected; it clears after the re-fetch. Back up `settings.json` first.
 5. ⬜ Document the release model and checklist in CLAUDE.md (Commands + Versioning).
-6. ⬜ Check before relying on it: does an update apply a *lower* version (rollback by moving `release`
-   back)? Docs say a copy updates when the version "differs".
+6. ✅ Rollback answered by step 3: `release` can't move backwards (no force-push, even for the owner),
+   so rollback = revert on `main`, bump the version, release forward. The "does an update apply a lower
+   version" question no longer matters.
 7. ⬜ Prove end-to-end from an external project (as done for v0.1.0 in `flatline`): install from
    `#release`, push an unreleased change to `main` and confirm it doesn't arrive, release it and
    confirm it does.
