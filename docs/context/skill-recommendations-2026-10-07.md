@@ -100,8 +100,8 @@ Claude-written file was formatted at Stop and an untouched file wasn't.
 Deliberately **not** executed in the session that logged it. The two items are coupled and the real work
 is deciding a release model, so it needs a dedicated session with room to explore the problem, weigh
 trade-offs and decide at a deliberate pace — not a quick edit pass. 2026-10-25: ref syntax researched,
-release model decided (see "Findings", "Release model" and "Release checklist" below); setup steps 2–4
-and 6 done, CLAUDE.md docs and the end-to-end proof remain.
+release model decided (see "Findings", "Release model" and "Release checklist" below); setup steps 2–6
+done, the end-to-end proof remains.
 
 - ⬜ 15 ⚪ `claude plugin validate --strict` and `claude plugin tag`.
 - ⬜ 27 🟡 Pin the marketplace to a tag/ref so `v*` tags are a real stability boundary (today every
@@ -232,7 +232,8 @@ Sources: plugins/marketplace-reference, plugins/host-marketplace, plugins/depend
      `known_marketplaces.json` — `claude plugin marketplace update kitbash` reports
      `Marketplace 'kitbash' not found` and `claude plugin list` shows the plugins as
      `failed to load`. Expected; it clears after the re-fetch. Back up `settings.json` first.
-5. ⬜ Document the release model and checklist in CLAUDE.md (Commands + Versioning).
+5. ✅ (2026-10-25) Release model, checklist and machine migration documented in CLAUDE.md (Current
+   state, Commands, Versioning); README's add command and Versioning updated to `#release`.
 6. ✅ Rollback answered by step 3: `release` can't move backwards (no force-push, even for the owner),
    so rollback = revert on `main`, bump the version, release forward. The "does an update apply a lower
    version" question no longer matters.

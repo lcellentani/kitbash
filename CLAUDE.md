@@ -8,8 +8,9 @@ The repo is scaffolded and live: `.claude-plugin/marketplace.json` registers fou
 real `plugin.json` and at least one skill. The marketplace is published on GitHub
 (`lcellentani/kitbash`). Tagged `v0.1.0` on 2026-10-07, after all four plugins passed their eval suites
 and an install-and-exercise check from an external project (`flatline`, installed copies from GitHub).
-See "Plugins" below for what exists today, `docs/context/skill-recommendations-2026-10-07.md` for the
-skill audit and what's still open, and `docs/context/session-2026-08-16-handoff.md` for earlier history
+Since 2026-10-25 installs track a `release` branch, not `main`, with per-plugin `<plugin>--v<version>`
+tags as the release record (see "Versioning"). See "Plugins" below for what exists today,
+`docs/context/skill-recommendations-2026-10-07.md` for the skill audit and what's still open, and `docs/context/session-2026-08-16-handoff.md` for earlier history
 and verified platform facts. Check `git log` / repo contents before assuming anything beyond this has
 changed.
 
@@ -67,10 +68,13 @@ exist without checking `plugins/` first.
 
 ## Commands
 
-- Validate a plugin before committing it: `claude plugin validate ./plugins/<plugin-name>`
-- Add the marketplace once per machine: `/plugin marketplace add lcellentani/kitbash` (or the CLI form,
-  `claude plugin marketplace add lcellentani/kitbash`)
+- Validate a plugin before committing it: `claude plugin validate ./plugins/<plugin-name>`; before a
+  release, `claude plugin validate --strict` on each plugin and on the repo root (marketplace manifest)
+- Add the marketplace once per machine, pinned to the release branch:
+  `/plugin marketplace add lcellentani/kitbash#release` (or the CLI form,
+  `claude plugin marketplace add lcellentani/kitbash#release`)
 - Install a plugin into a project: `/plugin install <plugin-name>@kitbash`
+- Tag a plugin release: `claude plugin tag plugins/<plugin-name> --push` (`--dry-run` to preview)
 
 Behavior is tested with `claude plugin eval` suites in each plugin's `evals/` (one directory per case:
 `prompt.md` + `graders/*.md`, optional `case.yaml` + `setup.sh` fixtures). Each case runs with and
@@ -89,22 +93,49 @@ read failures) is in `docs/context/evals-usage.md`.
   sandbox — macOS, Linux, or WSL2, not native Windows. Exclude them elsewhere by running other tags.
 
 Installed plugins are **cached**, not read live from this repo — editing a skill here does not affect an
-already-installed copy (the `kitbash` marketplace is registered from GitHub, and each `version` pins the
-cache). Two loops:
+already-installed copy (the `kitbash` marketplace is registered from GitHub at the `release` branch, and
+each `version` pins the cache). Two loops:
 
 - **Develop**: `claude --plugin-dir ./plugins/<plugin-name>` (repeatable for several plugins). That
   session loads the plugin from the working tree, silently shadowing the installed copy of the same
   name; `/reload-plugins` picks up edits. Other projects keep the stable cached version.
-- **Publish**: bump `version` in that plugin's `plugin.json`, push, then `/plugin marketplace update
-  kitbash` — that refreshes the catalog *and* updates every installed plugin whose version changed
-  (auto-update is off for this marketplace, so this step is manual). Then `/reload-plugins` or restart.
+- **Release**: follow the release checklist under "Versioning". Pushing to `main` alone reaches no
+  install, existing or fresh.
 
 ## Versioning
 
-Tag releases (semver; `v0.1.0` is the first) once plugins stabilize. Day-to-day iteration happens directly
-on `main`. Caveat: the marketplace is registered from GitHub without a pinned ref, so
-`/plugin marketplace update kitbash` gives every project what's on `main` — today a tag marks a
-known-good point to return to or diff against, not a boundary projects are held behind.
+Day-to-day iteration happens directly on `main`. Every machine registers the marketplace at
+`lcellentani/kitbash#release`, so installs only ever see what's on the `release` branch. A release
+moves `release` forward to a commit on `main` and tags each bumped plugin `<plugin>--v<version>`
+(semver per plugin). `v0.1.0` is a historical repo-wide tag from before this scheme; nothing reads it.
+
+Rules:
+- `release` only fast-forwards from `main`; never commit on it directly. A GitHub ruleset blocks
+  force-push and deletion on `release` (for the owner too), so it can never move backwards: roll back by
+  reverting on `main`, bumping the version, and releasing forward.
+- Every plugin with changes since its last tag gets a `version` bump. Updates are detected by `version`,
+  not by commit, so an unbumped change is never delivered to existing installs, while fresh installs
+  would get it — the same version would then mean different content on different machines.
+
+Release checklist:
+
+1. On `main`, clean tree, up to date with `origin/main`.
+2. For each plugin, `git diff <plugin>--v<version>..main -- plugins/<plugin>`. Any plugin with changes
+   gets a `version` bump in its `plugin.json`; commit the bumps.
+3. `claude plugin validate --strict` on each plugin and on the repo root.
+4. `git push origin main`, then `git push origin main:release` (git rejects a non-fast-forward; never
+   `--force`).
+5. `claude plugin tag plugins/<plugin> --push` for each bumped plugin (it also checks that `plugin.json`
+   and the marketplace entry agree, and refuses an existing tag).
+6. On each machine, `/plugin marketplace update kitbash` (auto-update is off for this marketplace), then
+   `/reload-plugins` or restart.
+
+To move a machine registered before 2026-10-25 (no ref, tracking `main`) onto `release`: add
+`"ref": "release"` to the `kitbash` source under `extraKnownMarketplaces` in `~/.claude/settings.json`,
+then start a new interactive session and run `/reload-plugins` once it reports `Plugins changed`. Don't
+use `claude plugin marketplace remove` — it uninstalls the plugins. Until that session re-fetches, shell
+commands report the marketplace as not found and its plugins as failed to load; that clears on its own.
+Details and findings: Phase 6 in `docs/context/skill-recommendations-2026-10-07.md`.
 
 ## How plugins got here
 

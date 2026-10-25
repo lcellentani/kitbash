@@ -23,10 +23,10 @@ added here as workflows worth reusing show up.
 
 ## Using these plugins
 
-Add the marketplace once per machine:
+Add the marketplace once per machine, pinned to the `release` branch:
 
 ```
-/plugin marketplace add lcellentani/kitbash
+/plugin marketplace add lcellentani/kitbash#release
 ```
 
 Then install whichever plugin a project needs:
@@ -43,9 +43,10 @@ claude plugin validate ./plugins/<plugin-name>
 
 ## Versioning
 
-Day-to-day iteration happens directly on `main`. Once a plugin stabilizes it gets tagged (`v0.1.0`,
-semver) so a mid-refactor commit on `main` doesn't silently change behavior for a project currently
-depending on it.
+Day-to-day iteration happens directly on `main`; installs follow the `release` branch, which only moves
+forward to a tested commit on `main`. So a mid-refactor commit on `main` doesn't silently change behavior
+for a project depending on a plugin. Each release tags the plugins it changes as
+`<plugin>--v<version>` (semver per plugin).
 
 ## Disclaimer
 
