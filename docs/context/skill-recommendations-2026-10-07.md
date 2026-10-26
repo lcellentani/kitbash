@@ -250,11 +250,19 @@ Sources: plugins/marketplace-reference, plugins/host-marketplace, plugins/depend
 
 - ⬜ 25b 🟡 Trim the per-area references to what Claude doesn't already know. Eval evidence so far: the
   naming table earns its place (Δ +0.40); add a case per reference area before cutting any of them.
+  **Approach replaced (2026-10-25):** review-first classification with regression evals instead of a
+  case per area — see `docs/specs/cpp-standards-trim.md` and its log
+  `docs/context/cpp-standards-trim-log.md`.
 - ⬜ 19 ⚪ quartermaster-ledger cost reporting toolbox: `Stop`/`SessionEnd` hooks → `${CLAUDE_PLUGIN_DATA}`,
   `${CLAUDE_SESSION_ID}`, `PreToolUse` hook enforcing `[Tn]` on `git commit`.
 - ⬜ 20 🟡 Inject review targets (`` !`git diff -- docs/plans/` ``) into the forked reviews.
 - ⬜ 21 ⚪ `userConfig` for `specs_dir` / `plans_dir` if a project ever needs different folders.
-- ⬜ 26 🟡 `paths:` globs on both C++ skills so they auto-load only around C++ files.
+- ✖ 26 🟡 `paths:` globs on both C++ skills so they auto-load only around C++ files. **Won't do**
+  (2026-10-25, tested on 2.1.310 with `--plugin-dir`): `paths:` is ignored for plugin skills — they stay
+  unconditional even with a never-matching glob. For project skills it hides the skill until a matching
+  file is touched (Read/Write/Edit), so a "write widget.h" prompt in an empty folder gets the skill only
+  after the file is written, and it blocks explicit `/name` until then. Both would hurt the C++ skills
+  if plugins ever honour it. See `docs/specs/cpp-standards-trim.md`.
 
 ## Release
 
